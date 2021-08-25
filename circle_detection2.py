@@ -41,14 +41,18 @@ class image_converter:
 
     mask = cv.inRange(hsv, lower_range, upper_range)
     #
-    kernel = np.ones((8,8),np.uint8)
+    kernel = np.ones((20,20),np.uint8)
     dilated = cv.dilate(mask,kernel,iterations=1)
+    kernel2 = np.ones((5,5),np.uint8)
+    erosed = cv.erode(dilated,kernel2,iterations = 1)
     #cv.imshow("DILATED",dilated)
-    reverse = 255 - dilated
+    # reverse = 255 - dilated
+    reverse = 255 - erosed
     cv.imshow("reverse",reverse)
     #
     cv.imshow("Image masked", mask)
-    cv.imwrite("laranja2masked.jpg", mask)
+    # cv.imwrite("laranja2masked.jpg", mask)
+    cv.imwrite("laranja2masked.jpg", reverse)
     default_file = 'laranja2masked.jpg'
     filename = default_file
     # Loads an image
@@ -61,9 +65,12 @@ class image_converter:
     gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
     gray = cv.medianBlur(gray, 5)
     rows = gray.shape[0]
-    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, rows / 8,
-                               param1=60, param2=16,
-                               minRadius=100, maxRadius=300)
+    # circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, rows / 8,
+    #                            param1=60, param2=16,
+    #                            minRadius=100, maxRadius=300)
+    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 300,
+                            param1=60, param2=16,
+                            minRadius=100, maxRadius=300)
     if circles is not None:
         circles = np.uint16(np.around(circles))
         for i in circles[0, :]:
